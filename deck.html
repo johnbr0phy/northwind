@@ -1,0 +1,1371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Take-home walkthrough</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%276%27%20fill%3D%27%231E3A5F%27/%3E%3Cpath%20d%3D%27M16%205%20L19%2013%20L27%2016%20L19%2019%20L16%2027%20L13%2019%20L5%2016%20L13%2013%20Z%27%20fill%3D%27%23F4A582%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,600..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+
+  /* ============================================================
+     Brand tokens. Display face is Fraunces (wonk axis up).
+     ============================================================ */
+  :root{
+    --teal:#1E3A5F;
+    --ivory:#FAF9F7;
+    --seafoam:#ECF0F6;
+    --aqua:#3D6E9E;
+    --aqua-bright:#4F82B8;
+    --manila:#FCF3EE;
+    --navy:#282C44;
+    --gold:#F4A582;
+    --beacon:#FADCCD;
+    --biedge:#EEE9E2;
+    --marina:#CBC4E4;
+    --black:#27282E;
+    --deep:#0A1A2F;
+
+    --ink:#27282E;
+    --muted:#566579;
+    --line:#DCE2EA;
+    --line-warm:#F0DDD3;
+    --warm-ink:#8A4B33;
+
+    --display:"Fraunces",Georgia,"Times New Roman",serif;
+    --body:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+    --r:4px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:auto}
+  html,body{height:100%;height:100svh;max-height:100svh;overflow:hidden}
+  body{
+    margin:0;display:flex;flex-direction:column;overflow:hidden;
+    position:fixed;top:0;left:0;width:100%;
+    background:var(--ivory);color:var(--ink);
+    font:16px/1.6 var(--body);
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  h1,h2,h3{
+    font-family:var(--display);font-weight:800;color:var(--teal);
+    font-variation-settings:"SOFT" 40,"WONK" 1,"opsz" 100;
+    letter-spacing:-.005em;text-wrap:balance;
+  }
+  h1{font-size:clamp(34px,4.4vw,60px);line-height:1.08;margin:0 0 18px;letter-spacing:.01em}
+  h2{font-size:clamp(26px,2.6vw,40px);line-height:1.12;margin:0 0 10px}
+  h3{font-size:21px;line-height:1.25;margin:26px 0 9px}
+  p{max-width:68ch;margin:0 0 14px}
+  b,strong{font-weight:700}
+  a{color:var(--aqua)}
+
+  .eyebrow{
+    font:500 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    color:var(--aqua);margin:0 0 16px;
+  }
+  .kicker{font-size:16px;line-height:1.6;color:var(--muted);max-width:70ch;margin:0 0 24px}
+
+  /* ---------------- chrome ---------------- */
+  header{
+    position:relative;top:auto;z-index:100;flex:0 0 auto;
+    display:flex;align-items:center;gap:16px;
+    background:var(--teal);color:var(--ivory);
+    padding:11px 22px 10px;
+    padding-top:max(11px, env(safe-area-inset-top));
+  }
+  .brand{display:flex;align-items:center;gap:11px;white-space:nowrap;min-width:0}
+  .brand svg{height:21px;width:auto;display:block;color:var(--ivory);flex:0 0 auto}
+  .brand span{
+    font:400 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+    color:rgba(250,249,247,.62);padding-left:11px;border-left:1px solid rgba(250,249,247,.22);
+  }
+  .navwrap{display:flex;align-items:center;gap:10px;margin-left:auto;min-width:0}
+  nav{display:flex;gap:2px;flex-wrap:nowrap;min-width:0;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+  nav::-webkit-scrollbar{display:none}
+  nav a{
+    font:500 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(250,249,247,.66);text-decoration:none;white-space:nowrap;
+    padding:8px 9px;border-radius:var(--r);cursor:pointer;transition:background .15s ease,color .15s ease;
+  }
+  nav a:hover,nav a:focus-visible{color:var(--ivory);background:rgba(250,249,247,.12);outline:none}
+  nav a.on{background:var(--gold);color:var(--black)}
+  .count{
+    font:500 11px/1 var(--mono);letter-spacing:.06em;color:rgba(250,249,247,.75);
+    border:1px solid rgba(250,249,247,.3);border-radius:var(--r);padding:7px 9px;
+    white-space:nowrap;font-variant-numeric:tabular-nums;
+  }
+  .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);width:0;transition:width .28s ease;z-index:31}
+
+  /* ---------------- carousel shell ---------------- */
+  .deck{
+    flex:1 1 auto;min-height:0;position:relative;
+    display:flex;align-items:stretch;gap:0;
+    overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;scroll-behavior:auto;
+    padding:0;scrollbar-width:none;
+  }
+  .deck.nosnap{scroll-snap-type:none}
+  .deck::-webkit-scrollbar{display:none}
+  .deck:focus{outline:none}
+
+  .slide{flex:0 0 100%;min-width:0;display:flex;position:relative;scroll-snap-align:center}
+  .card{
+    flex:1 1 auto;min-width:0;position:relative;overflow-y:auto;overscroll-behavior:contain;
+    display:flex;flex-direction:column;
+    background:var(--ivory);
+    padding:40px clamp(22px,6vw,80px) 52px;
+    scrollbar-width:thin;scrollbar-color:#C9D1DC transparent;
+  }
+  .card>*{flex:0 0 auto}
+  .card.fit{justify-content:safe center}   /* short slides sit centred; tall ones anchor to the top and scroll */
+  .card::-webkit-scrollbar{width:8px}
+  .card::-webkit-scrollbar-thumb{background:#C9D1DC;border-radius:4px}
+  .card .wrap,.card .hero-in{max-width:1040px;width:100%;margin:0 auto;position:relative;z-index:1}
+
+  /* teal slides: the opener and the closer */
+  .card.hero-card,.card.aiused{background:var(--teal);color:var(--ivory)}
+  .card.hero-card h1,.card.aiused h2{color:var(--ivory)}
+  .card.hero-card .eyebrow,.card.aiused .eyebrow{color:var(--gold)}
+  .card.aiused p{color:rgba(250,249,247,.88);font-size:16.5px;line-height:1.65}
+  .lede{font-size:clamp(16px,1.35vw,19px);line-height:1.55;max-width:60ch;color:rgba(250,249,247,.9);margin:0 0 26px}
+  .colophon{
+    font:400 11.5px/1 var(--mono);letter-spacing:.06em;color:rgba(250,249,247,.5);
+    border-top:1px solid rgba(250,249,247,.2);padding-top:15px;margin:30px 0 0;
+  }
+  .fibre-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .fibre{position:absolute;right:-70px;bottom:-190px;width:min(520px,46vw);opacity:.45}
+  .card.aiused .fibre{right:-110px;left:auto;top:-120px;bottom:auto;width:min(460px,40vw);opacity:.3;transform:scaleY(-1)}
+
+  /* ---------------- hero chips ---------------- */
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{
+    font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+    padding:9px 13px;border-radius:var(--r);border:1px solid rgba(250,249,247,.4);color:var(--ivory);
+  }
+  .chip.build{background:var(--gold);border-color:var(--gold);color:var(--black)}
+  .chip.small{background:var(--ivory);border-color:var(--ivory);color:var(--teal)}
+  .chip.explore{background:transparent;border-style:dashed;border-color:var(--beacon);color:var(--beacon)}
+  .chip.dead{border-color:rgba(250,249,247,.25);color:rgba(250,249,247,.45);text-decoration:line-through;text-decoration-thickness:1px}
+
+  /* ---------------- rule bar ---------------- */
+  .rulebar{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:22px 0 6px}
+  .rule-item{
+    background:var(--seafoam);border-left:3px solid var(--teal);border-radius:0 var(--r) var(--r) 0;
+    padding:14px 16px;font-size:14.5px;line-height:1.5;
+  }
+  .rule-item b{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:7px;font-weight:500;
+  }
+
+  /* ---------------- stats ---------------- */
+  .stats{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:22px 0;background:#fff}
+  .stat{flex:1 1 160px;padding:16px 18px;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat b{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:9px;font-weight:500;
+  }
+  .stat strong{
+    font-family:var(--display);font-weight:800;font-size:27px;line-height:1.05;color:var(--teal);
+    font-variation-settings:"SOFT" 40,"WONK" 1,"opsz" 100;letter-spacing:-.01em;
+  }
+  .stat span{display:block;margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--muted)}
+
+  /* ---------------- input cards ---------------- */
+  .inputs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0}
+  @media (max-width:900px){.inputs{grid-template-columns:1fr}}
+  .input-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:17px 18px 13px}
+  .input-card h3{margin:0 0 3px;font-size:19px}
+  .input-card .who{font:400 11.5px/1.45 var(--mono);color:var(--muted);margin:0 0 10px}
+  .caveat{
+    font-size:13px;line-height:1.45;color:var(--warm-ink);background:var(--manila);
+    border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:8px 11px;margin:0 0 10px;
+  }
+  .caveat::before{content:"Bias: ";font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+  .nums{margin:0 0 6px;padding:0;list-style:none;font-size:14px}
+  .nums li{padding:7px 0;border-top:1px solid var(--line);line-height:1.5}
+  .nums li:first-child{border-top:0}
+  .nums li strong{
+    font:500 12.5px var(--mono);font-variant-numeric:tabular-nums;font-weight:500;
+    background:var(--seafoam);color:var(--teal);padding:2px 6px;border-radius:3px;
+  }
+  details{margin:4px 0}
+  summary{
+    cursor:pointer;font:500 10.5px/1.5 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);padding:7px 0;
+  }
+  summary:hover{color:var(--teal)}
+  summary:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+  .quotes{
+    background:var(--seafoam);border-radius:var(--r);padding:6px 14px;
+    font-size:13.5px;line-height:1.55;max-height:280px;overflow:auto;
+  }
+  .quotes p{margin:11px 0;max-width:none}
+
+  /* ---------------- table ---------------- */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);margin:22px 0;background:#fff}
+  table{border-collapse:collapse;width:100%;min-width:840px;font-size:14px}
+  td:nth-child(4),td:nth-child(5){width:37%}
+  th{
+    font:500 10px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;text-align:left;
+    background:var(--teal);color:var(--ivory);padding:11px 14px;font-weight:500;
+  }
+  td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;line-height:1.5}
+  tr:hover td{background:var(--seafoam)}
+  td.rk{font:500 13px var(--mono);font-variant-numeric:tabular-nums;width:34px;color:var(--aqua)}
+  td .name{font-weight:700;display:block;margin-bottom:3px;color:var(--teal)}
+
+  .stamp{
+    display:inline-block;font:500 9.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 7px;border-radius:3px;white-space:nowrap;
+  }
+  .stamp.build{background:var(--teal);color:var(--ivory)}
+  .stamp.small{background:var(--gold);color:var(--black)}
+  .stamp.explore{background:transparent;border:1px dashed var(--aqua);color:var(--aqua)}
+  .stamp.diag{background:var(--beacon);color:var(--warm-ink)}
+  .stamp.dead{background:transparent;border:1px solid var(--line);color:var(--muted);text-decoration:line-through}
+
+  /* ---------------- PRD block ---------------- */
+  .prd{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#fff;margin:22px 0}
+  .prd-head{
+    background:var(--teal);padding:14px 20px;display:flex;justify-content:space-between;
+    gap:14px;align-items:center;flex-wrap:wrap;
+  }
+  .prd-head h3{margin:0;font-size:19px;color:var(--ivory)}
+  .prd-head .stamp.small{background:var(--gold);color:var(--black)}
+  .prd-head .stamp.build{background:var(--ivory);color:var(--teal)}
+  .prd-body{padding:6px 20px 18px}
+  .prd-body dl{margin:0}
+  .prd-body dt{
+    font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin:18px 0 6px;
+  }
+  .prd-body dd{margin:0;font-size:14.5px;line-height:1.55;max-width:72ch}
+  .steps{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:s}
+  .steps li{
+    counter-increment:s;padding:11px 0 11px 36px;position:relative;
+    border-top:1px solid var(--line);font-size:14.5px;line-height:1.5;max-width:72ch;
+  }
+  .steps li:first-child{border-top:0}
+  .steps li::before{
+    content:counter(s);position:absolute;left:0;top:11px;width:23px;height:23px;border-radius:3px;
+    background:var(--teal);color:var(--ivory);font:500 12px/23px var(--mono);text-align:center;
+  }
+  .no{color:var(--warm-ink)}
+  .no::before{content:"\2715\00a0";font-family:var(--mono);color:var(--gold)}
+
+  /* ---------------- mechanism grid ---------------- */
+  .mech{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:13px;margin:18px 0}
+  .mech div{background:var(--seafoam);border-radius:var(--r);padding:14px 15px;font-size:13.5px;line-height:1.5}
+  .mech b{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:7px;font-weight:500;
+  }
+
+  /* ---------------- risk ---------------- */
+  .risk{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media (max-width:900px){.risk{grid-template-columns:1fr}}
+  .risk-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .risk-card h3{margin:0 0 10px;font-size:17px}
+  .risk-card p{font-size:14px;margin:0 0 8px;line-height:1.5}
+  .risk-card ul{margin:0;padding-left:18px;font-size:14px;line-height:1.6}
+  .risk-card li{margin-bottom:5px}
+  .risk-card li::marker{color:var(--aqua)}
+
+  .killbox{background:var(--manila);border:1px solid var(--line-warm);border-radius:var(--r);padding:15px 18px;margin:18px 0}
+  .killbox b{font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--warm-ink)}
+  .killbox ul{margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.6}
+  .killbox li::marker{color:var(--gold)}
+
+  /* ---------------- pushback ---------------- */
+  .push{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin:12px 0;overflow:hidden}
+  .push summary{
+    font:inherit;font-size:15.5px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--teal);
+    padding:14px 18px;list-style:none;display:flex;gap:11px;align-items:baseline;
+  }
+  .push summary:hover{background:var(--seafoam)}
+  .push summary::before{content:"\2192";font-family:var(--mono);color:var(--gold);flex:0 0 auto}
+  .push[open] summary::before{content:"\2193"}
+  .push[open] summary{border-bottom:1px solid var(--line)}
+  .push summary::-webkit-details-marker{display:none}
+  .push .a{padding:14px 18px 16px 46px;font-size:14.5px;line-height:1.6;max-width:74ch}
+  .push .a p{margin:0 0 9px}
+  .push .a p:last-child{margin:0}
+
+  /* ---------------- questions ---------------- */
+  .qs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media (max-width:900px){.qs{grid-template-columns:1fr}}
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .qcard h3{margin:0 0 8px;font-size:16px}
+  .qcard ul{margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.55}
+  .qcard li{padding:9px 0 9px 22px;border-top:1px solid var(--line);position:relative}
+  .qcard li:first-child{border-top:0}
+  .qcard li::before{content:"?";position:absolute;left:2px;top:9px;font:500 13px var(--mono);color:var(--aqua)}
+  .qcard li em{display:block;margin-top:5px;font-style:normal;font-size:12.5px;color:var(--muted)}
+  .qcard li em::before{content:"\2192\00a0";color:var(--gold)}
+
+  /* ---------------- risk slide ---------------- */
+  .trade{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 18px}
+  @media (max-width:900px){.trade{grid-template-columns:1fr}}
+  .trade-card{background:var(--seafoam);border-radius:var(--r);padding:16px 18px 17px}
+  .trade-card.fatal{background:var(--manila);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0}
+  .trade-card>b{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:12px;font-weight:500;
+  }
+  .trade-card.fatal>b{color:var(--warm-ink)}
+  .ex{display:flex;gap:12px;font-size:15px;line-height:1.45;margin:0 0 8px;max-width:none}
+  .ex i{
+    flex:0 0 58px;font:500 9.5px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+    font-style:normal;color:var(--muted);
+  }
+  .cost{
+    margin:13px 0 0;padding-top:11px;border-top:1px solid rgba(30,58,95,.14);
+    font-size:13.5px;line-height:1.45;color:var(--muted);max-width:none;
+  }
+  .trade-card.fatal .cost{color:var(--warm-ink);border-top-color:rgba(138,75,51,.2)}
+
+  .closes{display:grid;gap:10px;margin:0 0 18px}
+  .close-row{
+    display:grid;grid-template-columns:minmax(190px,1fr) 2fr;gap:6px 20px;align-items:baseline;
+    background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:13px 16px;
+  }
+  @media (max-width:900px){.close-row{grid-template-columns:1fr}}
+  .close-row h3{margin:0;font-size:15.5px}
+  .close-row p{margin:0;font-size:14.5px;line-height:1.5;max-width:none}
+  .close-row .proof{
+    grid-column:1/-1;margin-top:2px;font:400 12.5px/1.5 var(--mono);color:var(--muted);
+  }
+  .close-row .proof b{
+    font:500 12.5px var(--mono);color:var(--aqua);font-weight:500;
+  }
+
+  .guard{
+    background:var(--teal);color:var(--ivory);border-radius:var(--r);
+    padding:14px 18px;margin:0 0 26px;display:flex;gap:10px 22px;flex-wrap:wrap;align-items:baseline;
+  }
+  .guard b{
+    font:500 10px/1.6 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--gold);font-weight:500;
+  }
+  .guard span{font-size:15px;line-height:1.5}
+
+  .when{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:3px solid var(--gold)}
+  @media (max-width:900px){.when{grid-template-columns:1fr;border-top:0}}
+  .when-step{padding:14px 20px 0 0}
+  .when-step+.when-step{padding-left:22px;border-left:1px solid var(--line)}
+  @media (max-width:900px){.when-step+.when-step{padding-left:0;border-left:0;border-top:1px solid var(--line)}}
+  .when-step b{
+    display:block;font:500 10px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:7px;font-weight:500;
+  }
+  .when-step p{font-size:14.5px;line-height:1.5;margin:0;max-width:none}
+  .when-step em{display:block;margin-top:7px;font-style:normal;font-size:13px;line-height:1.45;color:var(--muted)}
+  .when-step em::before{content:"\2192\00a0";color:var(--gold)}
+
+  .aside{margin-top:22px}
+  .aside summary{color:var(--muted)}
+  .aside p{font-size:13.5px;line-height:1.55;color:var(--muted);margin:6px 0 0;max-width:76ch}
+
+  /* ============================================================
+     PRESENT MODE — headline + one graphic per slide.
+     Detail mode keeps the full argument underneath.
+     ============================================================ */
+  .card>.wrap{display:flex;flex-direction:column;justify-content:safe center;flex:1 1 auto;min-height:0}
+  .sheet{max-width:1180px;width:100%;margin:0 auto;position:relative;z-index:1}
+  .eyebrow{margin-bottom:18px}
+  .p-head{
+    font-family:var(--display);font-weight:800;color:var(--teal);
+    font-variation-settings:"SOFT" 40,"WONK" 1,"opsz" 100;
+    font-size:clamp(30px,3.5vw,52px);line-height:1.07;letter-spacing:-.005em;
+    margin:0 0 34px;max-width:22ch;text-wrap:balance;
+  }
+  .hero-card .p-head,.aiused .p-head{color:var(--ivory);max-width:24ch}
+
+  /* mono cue chips under a graphic */
+  .cues{display:flex;gap:9px;flex-wrap:wrap;margin-top:30px}
+  .cue{
+    font:500 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+    border:1px solid var(--line);border-radius:var(--r);padding:10px 13px;color:var(--muted);background:#fff;
+  }
+  .cue.hot{border-color:var(--gold);background:var(--beacon);color:var(--black)}
+  .hero-card .cue,.aiused .cue{background:transparent;border-color:rgba(250,249,247,.32);color:rgba(250,249,247,.82)}
+  .hero-card .cue.hot,.aiused .cue.hot{background:var(--gold);border-color:var(--gold);color:var(--black)}
+
+  /* three slots + kills */
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:900px){.slots{grid-template-columns:1fr}}
+  .slot{border:1px solid rgba(250,249,247,.3);border-radius:var(--r);padding:18px 18px 20px}
+  .slot.lead{background:var(--gold);border-color:var(--gold)}
+  .slot i{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    font-style:normal;color:rgba(250,249,247,.6);margin-bottom:12px;
+  }
+  .slot.lead i{color:rgba(39,40,46,.62)}
+  .slot strong{
+    display:block;font-family:var(--display);font-weight:800;font-size:clamp(19px,1.7vw,25px);
+    line-height:1.15;color:var(--ivory);font-variation-settings:"SOFT" 40,"WONK" 1;
+  }
+  .slot.lead strong{color:var(--black)}
+
+  /* giant number statement */
+  .gap{display:block;margin-bottom:6px}
+  .gap b{
+    font-family:var(--display);font-weight:900;font-size:clamp(52px,8vw,104px);line-height:.95;
+    color:var(--teal);font-variation-settings:"SOFT" 30,"WONK" 1,"opsz" 144;letter-spacing:-.02em;
+  }
+  .gap i{
+    display:block;margin-top:12px;font:500 11.5px/1.6 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+    font-style:normal;color:var(--aqua);
+  }
+
+  /* horizontal bars */
+  .bars{display:grid;gap:12px;margin-top:26px}
+  .bar-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr auto;gap:8px 18px;align-items:center}
+  @media (max-width:760px){.bar-row{grid-template-columns:1fr}.bar-row>span.out{white-space:normal}}
+  .bar-row>i{
+    font:500 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+    font-style:normal;color:var(--muted);
+  }
+  .track{position:relative;height:34px;background:var(--seafoam);border-radius:3px;display:flex;align-items:center}
+  .fill{height:100%;background:var(--teal);border-radius:3px}
+  .fill.warm{background:var(--gold)}
+  .fill{display:flex;align-items:center;justify-content:center}
+  .fill span{font:500 13px/1 var(--mono);color:var(--ivory);letter-spacing:.04em;white-space:nowrap}
+  .fill.warm span{color:var(--black)}
+  .bar-row>span.out{
+    font:500 12.5px/1 var(--mono);color:var(--muted);letter-spacing:.04em;white-space:nowrap;
+  }
+
+  /* four evidence tiles */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:1100px){.tiles{grid-template-columns:1fr 1fr}}
+  @media (max-width:640px){.tiles{grid-template-columns:1fr}}
+  .tile{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:17px 18px 19px}
+  .tile i{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    font-style:normal;color:var(--aqua);margin-bottom:14px;
+  }
+  .tile b{
+    display:block;font-family:var(--display);font-weight:800;font-size:clamp(24px,2.4vw,34px);
+    line-height:1.05;color:var(--teal);font-variation-settings:"SOFT" 40,"WONK" 1;margin-bottom:9px;
+  }
+  .tile span{display:block;font-size:14.5px;line-height:1.45;color:var(--muted)}
+
+  /* ranked ladder */
+  .ladder{display:grid;gap:8px}
+  .rung{
+    display:grid;grid-template-columns:34px 1fr auto;gap:16px;align-items:center;
+    background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;
+  }
+  .rung>i{font:500 14px/1 var(--mono);font-style:normal;color:var(--aqua);font-variant-numeric:tabular-nums}
+  .rung strong{
+    font-family:var(--display);font-weight:800;font-size:clamp(17px,1.6vw,22px);color:var(--teal);
+    font-variation-settings:"SOFT" 40,"WONK" 1;
+  }
+  .rung.out{background:transparent;border-style:dashed}
+  .rung.out strong{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+  .rung.first{border-color:var(--teal);border-width:2px}
+
+  /* left-to-right flow */
+  .flow{display:flex;gap:0;flex-wrap:wrap;align-items:stretch}
+  .flow-step{
+    flex:1 1 150px;background:var(--seafoam);border-radius:var(--r);padding:16px 16px 18px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .flow-step+.flow-step{margin-left:34px;position:relative}
+  .flow-step+.flow-step::before{
+    content:"\2192";position:absolute;left:-27px;top:50%;transform:translateY(-50%);
+    font:18px/1 var(--mono);color:var(--gold);
+  }
+  @media (max-width:900px){
+    .flow{flex-direction:column}
+    .flow-step+.flow-step{margin-left:0;margin-top:30px}
+    .flow-step+.flow-step::before{content:"\2193";left:50%;top:-24px;transform:translateX(-50%)}
+  }
+  .flow-step i{
+    font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;font-style:normal;color:var(--aqua);
+  }
+  .flow-step strong{
+    font-family:var(--display);font-weight:800;font-size:clamp(16px,1.4vw,20px);line-height:1.15;
+    color:var(--teal);font-variation-settings:"SOFT" 40,"WONK" 1;
+  }
+  .flow-step.human{background:var(--beacon)}
+  .flow-step.human i{color:var(--warm-ink)}
+
+  /* branch under the gate */
+  .branch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+  @media (max-width:760px){.branch{grid-template-columns:1fr}}
+  .branch div{
+    border-radius:var(--r);padding:14px 16px;font-size:15px;line-height:1.45;
+    background:var(--seafoam);
+  }
+  .branch div.hold{background:var(--manila);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0}
+  .branch b{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:8px;font-weight:500;
+  }
+  .branch div.hold b{color:var(--warm-ink)}
+
+  /* the risk balance */
+  .scale{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:900px){.scale{grid-template-columns:1fr}}
+  .pan{border-radius:var(--r);padding:20px 22px 22px;background:var(--seafoam)}
+  .pan.heavy{background:var(--manila);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0}
+  .pan i{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+    font-style:normal;color:var(--aqua);margin-bottom:14px;
+  }
+  .pan.heavy i{color:var(--warm-ink)}
+  .pan strong{
+    display:block;font-family:var(--display);font-weight:800;font-size:clamp(20px,2vw,29px);line-height:1.12;
+    color:var(--teal);font-variation-settings:"SOFT" 40,"WONK" 1;margin-bottom:12px;
+  }
+  .pan span{display:block;font-size:15px;line-height:1.5;color:var(--muted)}
+  .pan.heavy span{color:var(--warm-ink)}
+
+  /* plain quote stack */
+  .voices{display:grid;gap:10px}
+  .voice-row{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .voice-row>summary{
+    padding:15px 18px;list-style:none;cursor:pointer;
+    font:inherit;font-size:clamp(15px,1.45vw,19px);line-height:1.4;color:var(--teal);font-weight:500;
+    text-transform:none;letter-spacing:0;display:flex;gap:13px;align-items:baseline;
+    transition:background .15s ease;
+  }
+  .voice-row>summary::-webkit-details-marker{display:none}
+  .voice-row>summary::before{
+    content:"\201C";font-family:var(--display);font-size:26px;line-height:.8;color:var(--gold);flex:0 0 auto;
+  }
+  .voice-row>summary::after{
+    content:"\002B";margin-left:auto;font:400 17px/1 var(--mono);color:var(--gold);flex:0 0 auto;
+  }
+  .voice-row[open]>summary::after{content:"\2212"}
+  .voice-row>summary:hover{background:var(--seafoam)}
+  .voice-row>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+  .voice-row[open]>summary{border-bottom:1px solid var(--line)}
+  .voice-row .a{padding:14px 18px 16px 44px}
+  .voice-row .a p{margin:0;font-size:14.5px;line-height:1.55;max-width:76ch;color:var(--ink)}
+
+
+  /* questions John throws back, on the pushback slide */
+  .backat{margin-top:22px}
+  .backat>b{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+    color:var(--aqua);margin-bottom:12px;font-weight:500;
+  }
+  .asks{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+  @media (max-width:900px){.asks{grid-template-columns:1fr}}
+  .asks div{
+    background:var(--seafoam);border-radius:var(--r);padding:11px 14px;
+    font-size:14px;line-height:1.45;
+  }
+  .asks i{font-style:normal;font-weight:700;color:var(--teal)}
+
+  /* ============================================================
+     Mobile. Desktop rules above are untouched; everything here is
+     inside a query so nothing leaks upward.
+     ============================================================ */
+  @supports (height:100svh){html,body{height:100svh;max-height:100svh}}
+
+  @media (max-width:760px){
+    /* header: wordmark holds its ground, the nav is what shrinks */
+    header{gap:10px;padding:8px 12px;padding-top:max(8px, env(safe-area-inset-top))}
+    .brand{flex:0 0 auto}
+    .brand svg{height:18px}
+    .navwrap{flex:1 1 auto;min-width:0;margin-left:0;padding-left:10px;border-left:1px solid rgba(250,249,247,.18)}
+    nav{
+      flex:1 1 auto;min-width:0;
+      -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 14px),transparent 100%);
+      mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 14px),transparent 100%);
+    }
+    nav a{padding:11px 10px;font-size:11px}          /* 38px tap target */
+    nav::after{content:"";flex:0 0 8px}              /* breathing room at the end of the scroll */
+
+    .card{padding:22px 16px 58px}   /* clears the scroll badge */
+    .sheet{max-width:none}
+
+    .p-head{font-size:clamp(26px,7.2vw,32px);margin-bottom:20px;max-width:none}
+    .sub{font-size:15.5px;line-height:1.45;margin:-10px 0 20px;max-width:none}
+    .eyebrow{margin-bottom:12px}
+
+    .blocks,.risks,.trade,.scale,.tiles,.slots,.asks,.made,.voices,.closes{gap:11px}
+    .block{padding:14px 15px 15px}
+    .block strong{font-size:17px;margin-bottom:8px}
+    .block p{font-size:14px;line-height:1.5}
+    .block p+p{margin-top:7px}
+
+    .tile{padding:14px 15px 15px}
+    .tile i{margin-bottom:9px}
+    .tile b{font-size:26px;margin-bottom:7px}
+    .tile span{font-size:14px}
+
+    .slot{padding:14px 15px 15px}
+    .slot i{margin-bottom:8px}
+    .slot strong{font-size:19px}
+
+    .gap b{font-size:clamp(40px,12.5vw,56px)}
+    .gap i{font-size:10.5px;letter-spacing:.1em;margin-top:9px}
+    .track{height:30px}
+    .bar-row{gap:5px 0}
+    .bar-row>i{font-size:10.5px}
+
+    .rung{padding:12px 14px;gap:12px}
+    .rung strong{font-size:17px}
+    .rung em{font-size:13.5px}
+
+    .riskcard{padding:14px 15px 13px}
+    .riskcard>b{font-size:18px;margin-bottom:11px}
+    .riskcard dd{font-size:14px}
+    .guard{padding:12px 15px 13px;gap:6px}
+    .guard span{font-size:14px}
+
+    .proof-strip{padding:14px 16px 15px;margin-top:14px}
+    .proof-strip p{font-size:14.5px;line-height:1.5}
+
+    .voice-row>summary{padding:13px 14px;font-size:15.5px;gap:10px}
+    .voice-row .a{padding:12px 14px 14px 36px}
+    .voice-row .a p{font-size:14px}
+
+    .when-step{padding:13px 0 0}
+    .when-step p{font-size:14px}
+
+    .made div{padding:13px 14px 15px}
+    .made b{font-size:17px}
+    .made span{font-size:13.5px}
+
+    .asks div{font-size:13.5px;padding:10px 13px}
+    .backat{margin-top:18px}
+
+    .cue{font-size:11px;padding:9px 11px}
+    .aside{margin-top:20px}
+    .more{right:12px;bottom:12px}
+  }
+
+  /* very narrow phones */
+  @media (max-width:400px){
+    .card{padding:20px 14px 56px}
+    .p-head{font-size:clamp(24px,7vw,28px)}
+    nav a{padding:11px 8px}
+  }
+
+  /* ---------------- deck furniture ---------------- */
+  .more{
+    position:absolute;right:18px;bottom:16px;z-index:5;pointer-events:none;
+    font:500 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    background:var(--gold);color:var(--black);padding:7px 10px;border-radius:var(--r);
+    opacity:0;transition:opacity .25s ease;
+  }
+  .slide.current.overflowing:not(.atend) .more{opacity:1}
+
+  .arrow{
+    position:fixed;top:50%;z-index:25;
+    width:44px;height:44px;display:grid;place-items:center;cursor:pointer;
+    background:var(--ivory);border:1px solid var(--teal);border-radius:var(--r);color:var(--teal);
+    font:15px/1 var(--mono);transform:translateY(-50%);
+    transition:background .15s ease,transform .15s ease,box-shadow .15s ease;
+  }
+  .arrow:hover{background:var(--beacon);transform:translateY(calc(-50% - 4px));box-shadow:0 6px 14px rgba(30,58,95,.16)}
+  .arrow:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .arrow[disabled]{opacity:.28;cursor:default;box-shadow:none;transform:translateY(-50%)}
+  .arrow.prev{left:16px}
+  .arrow.next{right:16px}
+
+  .hint{
+    position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:24;pointer-events:none;
+    text-align:center;font:400 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);background:rgba(250,249,247,.92);border:1px solid var(--line);border-radius:var(--r);
+    padding:8px 13px;white-space:nowrap;transition:opacity .4s ease;
+  }
+  .hint.gone{opacity:0}
+  .hint kbd{font:inherit;border:1px solid var(--line);background:#fff;border-radius:3px;padding:2px 5px;margin:0 1px}
+
+  @media (max-width:1320px){.brand span{display:none}}
+  @media (max-width:1180px){.arrow{display:none}}
+  @media (max-width:760px){
+    .card{padding:26px 18px 40px}
+    header{padding:9px 13px;padding-top:max(9px, env(safe-area-inset-top))}
+    .brand span{display:none}
+    .count{display:none}
+    .hint{display:none}
+    .fibre{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
+
+  /* ---------------- v3 components ---------------- */
+  .sub{
+    font-size:clamp(16px,1.5vw,20px);line-height:1.5;color:var(--muted);
+    max-width:62ch;margin:-18px 0 30px;
+  }
+  .hero-card .sub,.aiused .sub{color:rgba(250,249,247,.82)}
+
+  /* three explanatory blocks */
+  .blocks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:1000px){.blocks{grid-template-columns:1fr}}
+  .blocks.two{grid-template-columns:1fr 1fr}
+  @media (max-width:1000px){.blocks.two{grid-template-columns:1fr}}
+  .block{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 20px}
+  .block.soft{background:var(--seafoam);border-color:transparent}
+  .block.warm{background:var(--manila);border-left:3px solid var(--gold);border-color:transparent;border-radius:0 var(--r) var(--r) 0}
+  .block>i{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+    font-style:normal;color:var(--aqua);margin-bottom:12px;
+  }
+  .block.warm>i{color:var(--warm-ink)}
+  .block strong{
+    display:block;font-family:var(--display);font-weight:800;font-size:clamp(17px,1.6vw,21px);line-height:1.18;
+    color:var(--teal);font-variation-settings:"SOFT" 40,"WONK" 1;margin-bottom:10px;
+  }
+  .block p{margin:0;font-size:14.5px;line-height:1.55;max-width:none;color:var(--ink)}
+  .block p+p{margin-top:9px}
+
+  /* the emphatic proof strip */
+  .proof-strip{
+    background:var(--teal);color:var(--ivory);border-radius:var(--r);padding:18px 22px 20px;margin-top:18px;
+  }
+  .proof-strip i{
+    display:block;font:500 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+    font-style:normal;color:var(--gold);margin-bottom:11px;
+  }
+  .proof-strip p{margin:0;font-size:15.5px;line-height:1.55;max-width:none;color:rgba(250,249,247,.92)}
+  .proof-strip b{color:var(--ivory);font-weight:700}
+
+  /* plain-spoken risk cards */
+  .risks{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media (max-width:1000px){.risks{grid-template-columns:1fr}}
+  .riskcard{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 16px}
+  .riskcard>b{
+    display:block;font-family:var(--display);font-weight:800;font-size:clamp(18px,1.7vw,23px);line-height:1.16;
+    color:var(--teal);font-variation-settings:"SOFT" 40,"WONK" 1;margin-bottom:14px;
+  }
+  .riskcard dl{margin:0}
+  .riskcard dt{
+    font:500 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+    color:var(--aqua);margin:12px 0 5px;
+  }
+  .riskcard dt:first-of-type{margin-top:0}
+  .riskcard dd{margin:0;font-size:14.5px;line-height:1.5}
+  .riskcard dd.stops{color:var(--teal);font-weight:500}
+
+  /* ranked rows carrying a reason */
+  .rung.why{grid-template-columns:34px minmax(180px,1fr) 2fr auto;gap:18px}
+  @media (max-width:900px){.rung.why{grid-template-columns:28px 1fr;row-gap:6px}.rung.why em{grid-column:2}}
+  .rung em{font-style:normal;font-size:14px;line-height:1.45;color:var(--muted)}
+
+  /* how this was made */
+  .made{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:1000px){.made{grid-template-columns:1fr 1fr}}
+  @media (max-width:640px){.made{grid-template-columns:1fr}}
+  .made div{
+    border:1px solid rgba(250,249,247,.24);border-radius:var(--r);padding:15px 16px 17px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .made div.punch{background:var(--gold);border-color:var(--gold)}
+  .made i{
+    font:500 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;font-style:normal;
+    color:var(--gold);
+  }
+  .made div.punch i{color:rgba(39,40,46,.6)}
+  .made b{
+    font-family:var(--display);font-weight:800;font-size:clamp(16px,1.4vw,19px);line-height:1.15;
+    color:var(--ivory);font-variation-settings:"SOFT" 40,"WONK" 1;
+  }
+  .made div.punch b{color:var(--black)}
+  .made span{font-size:13.5px;line-height:1.5;color:rgba(250,249,247,.8)}
+  .made div.punch span{color:rgba(39,40,46,.78)}
+
+  /* inline detail, for when the room digs in */
+  .aside{margin-top:26px}
+  .aside>summary{color:var(--muted)}
+  .aside[open]>summary{color:var(--teal)}
+  .aside .pane{
+    margin-top:12px;padding-top:16px;border-top:1px solid var(--line);
+  }
+  .hero-card .aside .pane,.aiused .aside .pane{border-top-color:rgba(250,249,247,.2)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 118 21" width="118" height="21" fill="currentColor" aria-hidden="true"><path d="M10.5 0.5 L12.6 8.4 L20.5 10.5 L12.6 12.6 L10.5 20.5 L8.4 12.6 L0.5 10.5 L8.4 8.4 Z"/><text x="26" y="16.2" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="18" letter-spacing="-.2">northwind</text></svg><span>Take-home &middot; John Brophy</span></div>
+  <div class="navwrap">
+    <nav id="nav">
+      <a href="#call">The call</a><a href="#goal">Goal</a><a href="#inputs">Data</a><a href="#rank">Trade-offs</a><a href="#build">Build</a><a href="#smallbet">Small bet</a><a href="#risk">Risk</a><a href="#push">Pushback</a><a href="#questions">Questions</a><a href="#ai">How I built it</a>
+    </nav>
+    <span class="count" id="count">01 / 10</span>
+  </div>
+  <div class="bar" id="bar"></div>
+</header>
+
+<main class="deck" id="deck" tabindex="-1">
+  <article class="slide" id="call" aria-label="The call">
+    <div class="card hero-card">
+      <div class="fibre-wrap"><svg class="fibre" viewBox="0 0 830 800" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M60 790 C 190 700, 250 560, 320 430 C 410 260, 640 190, 660 330 C 680 470, 440 530, 420 380 C 400 230, 630 120, 800 50" stroke="url(#fib_a)" stroke-width="25" stroke-miterlimit="10" stroke-linecap="round"/>
+<defs>
+<linearGradient id="fib_a" x1="158.919" y1="756.621" x2="548.271" y2="-60.5529" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#4F82B8"/>
+<stop offset="0.35" stop-color="#ECF0F6"/>
+<stop offset="0.65" stop-color="#FADCCD"/>
+<stop offset="1" stop-color="#F4A582"/>
+</linearGradient>
+</defs>
+</svg></div>
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">1 &middot; The call</p>
+    <h2 class="p-head">Make trackers continuous. Answer before the decision.</h2>
+    <div class="slots">
+      <div class="slot lead"><i>Substantial</i><strong>Tracker continuity</strong></div>
+      <div class="slot"><i>Small</i><strong>Answer before the decision date</strong></div>
+      <div class="slot"><i>Explore</i><strong>Query your data over MCP</strong></div>
+    </div>
+    <div class="cues">
+      <span class="cue">Not building: dashboards</span>
+      <span class="cue">Not building: open-end theming</span>
+    </div>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="goal" aria-label="Goal">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">2 &middot; The goal</p>
+    <h2 class="p-head">102% to 115% is an expansion problem.</h2>
+    <div class="gap">
+      <b>102% &rarr; 115%</b>
+      <i>NRR today, and the target &middot; GRR is 89%, so expansion barely outruns the leak</i>
+    </div>
+    <div class="bars">
+      <div class="bar-row"><i>Above $200k ACV</i>
+        <div class="track"><div class="fill" style="width:64%"><span>64% of revenue</span></div></div><span class="out">18% of logos</span>
+      </div>
+      <div class="bar-row"><i>Below $40k</i>
+        <div class="track"><div class="fill warm" style="width:15%"><span>15%</span></div></div><span class="out">55% of logos &middot; 2&times; churn</span>
+      </div>
+    </div>
+    <div class="cues"><span class="cue hot">The request table is weighted by the wrong segment</span></div>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="inputs" aria-label="Data">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">3 &middot; What the data says</p>
+    <h2 class="p-head">61 data points. Four of them decided the plan.</h2>
+    <p class="sub">Four inputs read end to end &mdash; the discovery call, a quarter of telemetry, eleven win/loss notes, the Slack thread. 61 things worth writing down, and 23 questions I still want answered. These four are the ones that changed what I would build.</p>
+    <div class="tiles">
+      <div class="tile"><i>Discovery call</i><b>1 day</b><span>Per wave, rebuilding the trend deck by hand &mdash; four times a year, <em>plus every time someone pulls a number out of an old deck</em>. When the CMO asks if awareness is up on last year, she cannot give a straight answer.</span></div>
+      <div class="tile"><i>Telemetry</i><b>64%</b><span>Of revenue sits in accounts whose first ask is tracker continuity. Dashboards rank fifth. This tells us who to build for.</span></div>
+      <div class="tile"><i>Win / loss</i><b>&minus;35%</b><span>Glimmer's price on the dashboard surface, and its larger accounts come back to full service. This tells us where not to fight.</span></div>
+      <div class="tile"><i>Slack thread</i><b>0</b><span>Brand managers we have ever interviewed. Heron sells straight to them, so if they are becoming the buyer, half this roadmap is aimed at the wrong person.</span></div>
+    </div>
+    <details class="aside">
+      <summary>Every input, and what is wrong with each</summary>
+      <div class="pane">
+        <div class="blocks">
+          <div class="block soft"><i>Discovery call &middot; Ruth Calder, Solene</i>
+            <p>~1 day per wave rebuilding by hand, 4&times;/year, <b>plus whenever someone pulls a number out of an old deck</b> &mdash; "a constant tax." Having to hedge the CMO on "is awareness up versus last year" is, in her words, "the worst possible answer." Nine brand teams email her for cuts; 2-day turnaround. Research lands after the decision 4&times; this year. Open-ends already go through ChatGPT.</p>
+            <p><b>Bias:</b> one mid-market logo. Pain, not prevalence, and her team went 6&nbsp;&rarr;&nbsp;4.</p></div>
+          <div class="block soft"><i>Telemetry &middot; ~240 studies</i>
+            <p>64% of revenue ranks tracker continuity first; dashboards fifth. 25 working hours spread over 23 calendar days, 10.5 of them client-side. 2.8 revision rounds. Ad-hoc questions +35% YoY, 75% from 10% of accounts.</p>
+            <p><b>Bias:</b> directional, not audited, and not split by segment.</p></div>
+          <div class="block soft"><i>Win / loss &middot; eleven deals</i>
+            <p>Glimmer ~35% cheaper on "ask your data" dashboards, eating SMB; its larger accounts returned to full service. Heron at a third of the price, selling to brand managers. Two of the top ten build their own retrieval. Nobody competes on tracker continuity.</p>
+            <p><b>Bias:</b> n=11, written by the AE who lost.</p></div>
+          <div class="block soft"><i>Slack thread &amp; CEO</i>
+            <p>Nora: four deals lost to a clickable thing. Omar: the need is querying without emailing someone. Anya: 2.8 rounds is margin. Lena: three of five biggest accounts are trackers, and we have never talked to a brand manager. CEO: NRR above 115.</p>
+            <p><b>Bias:</b> a map of incentives, not a customer ranking.</p></div>
+        </div>
+      </div>
+    </details>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="rank" aria-label="Trade-offs">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">4 &middot; The trade-offs</p>
+    <h2 class="p-head">Six options. Two get built this quarter.</h2>
+    <p class="sub">Ranked on one test: does it expand the accounts that already pay us, and can we defend it in front of a customer this quarter?</p>
+    <div class="ladder">
+      <div class="rung why first"><i>1</i><strong>Tracker continuity</strong><em>First ask in the 64%-of-revenue segment. Three of our five biggest accounts run them. Nobody is competing.</em><span class="stamp build">Build</span></div>
+      <div class="rung why"><i>2</i><strong>Answer before the decision date</strong><em>Second most requested thing across 410 logged requests, and slow turnaround is 30% of churn exits. What is missing is proof we can call it early and be right.</em><span class="stamp small">Small bet</span></div>
+      <div class="rung why"><i>3</i><strong>Query your data over MCP</strong><em>Answers the access demand without a dashboard war. Needs a week of discovery first.</em><span class="stamp explore">Explore</span></div>
+      <div class="rung why"><i>4</i><strong>Delivery friction</strong><em>2.8 revision rounds is a real cost with an unknown cause. Measure before building.</em><span class="stamp diag">Diagnose</span></div>
+      <div class="rung why out"><i>5</i><strong>Self-serve dashboards</strong><em>Wrong buyer, Glimmer's axis, 35% under our price.</em><span class="stamp dead">Killed</span></div>
+      <div class="rung why out"><i>6</i><strong>Open-end theming</strong><em>Clients already do this in ChatGPT. Table stakes inside the service.</em><span class="stamp dead">Killed</span></div>
+    </div>
+    <details class="aside">
+      <summary>What each one actually is</summary>
+      <div class="pane">
+        <div class="blocks">
+          <div class="block soft"><i>1 &middot; Tracker continuity</i><p>Keeps a repeated study's trend line intact over time. When a client changes a question or a scale, a researcher-approved map translates old waves to new, so the trend line survives instead of being rebuilt by hand.</p></div>
+          <div class="block soft"><i>2 &middot; Answer before the decision date</i><p>At kickoff we record what decision the study feeds and when it gets made. If the date lands mid-study, we send an early read of the winner &mdash; but only once the numbers are stable and a researcher signs off.</p></div>
+          <div class="block soft"><i>3 &middot; MCP access</i><p>A read-only connection so stakeholders ask questions of their own study data from Claude, Slack or their internal AI. Approved, cited answers only. No new interface to log into.</p></div>
+        </div>
+        <div class="blocks" style="margin-top:16px">
+          <div class="block soft"><i>4 &middot; Delivery friction</i><p>The unbilled back-and-forth after a report ships: 2.8 revision rounds per study, five days sitting in client review. Cause-code it for a quarter before anyone builds workflow.</p></div>
+          <div class="block soft"><i>5 &middot; Self-serve dashboards</i><p>The number one request by volume, from the segment that pays least and churns most, on the exact surface Glimmer undercuts us on.</p></div>
+          <div class="block soft"><i>6 &middot; Open-end theming</i><p>AI that groups free-text answers into themes. Ruth's team already does this with ChatGPT and would not pay for it separately.</p></div>
+        </div>
+      </div>
+    </details>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="build" aria-label="Build">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">5 &middot; The substantial bet</p>
+    <h2 class="p-head">Tracker continuity</h2>
+    <p class="sub">A tracker's questions change, the trend line breaks, and someone rebuilds it by hand. We build that link once and keep it.</p>
+    <div class="blocks">
+      <div class="block warm">
+        <i>What breaks today</i>
+        <strong>Marketing reworks the questionnaire. Old and new waves stop lining up.</strong>
+        <p>The better part of a day, every wave &mdash; plus every time someone pulls a number out of an old deck and nobody can say whether it still compares.</p>
+      </div>
+      <div class="block">
+        <i>What we build</i>
+        <strong>A question map, stored per tracker.</strong>
+        <p>Old wording, new wording, and the transformation between them. Built once with a researcher, then applied to every wave that follows, and to any old number someone quotes.</p>
+      </div>
+      <div class="block">
+        <i>Where the AI sits</i>
+        <strong>It proposes. It never decides.</strong>
+        <p>The model matches questions across the two questionnaires, with the wording, a reason and a confidence score. A researcher approves each one; low confidence means not comparable. Every calculation runs in code.</p>
+      </div>
+    </div>
+    <div class="proof-strip">
+      <i>How we know it works, before a client sees it</i>
+      <p><b>The evaluation set already exists:</b> every trend deck a researcher has rebuilt by hand. We replay those waves, diff our answer against theirs, and count the times we would have said "comparable" when they said no. <b>That number has to be zero.</b></p>
+    </div>
+    <details class="aside">
+      <summary>The thin PRD, if you want the scope line</summary>
+      <div class="pane">
+        <div class="blocks two">
+          <div class="block soft"><i>v1 scope</i><p>One tracker template, up to five historical waves. Comparison table and short narrative into the existing report flow, every number linked to its source question and transformation. Client sees lineage: source question, wave, transformation, reviewer.</p></div>
+          <div class="block soft"><i>Out of scope</i><p>Inventing bridges between questions that genuinely moved. Replacing researcher sign-off. Arbitrary cross-study Q&amp;A. Dashboards.</p><p><b>Week one, before code:</b> ten broken comparisons reviewed with researchers, interviews with the three largest tracker accounts, and one continuity read delivered entirely by hand to a design partner.</p></div>
+        </div>
+      </div>
+    </details>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="smallbet" aria-label="Small bet">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">6 &middot; The small bet</p>
+    <h2 class="p-head">Answer before the decision, not after it.</h2>
+    <p class="sub">Ruth's team delivered a clean study six days after the client had chosen. Good work, worth nothing &mdash; and it is the #2 ask across 410 logged requests.</p>
+    <div class="blocks">
+      <div class="block warm">
+        <i>What we add</i>
+        <strong>Three fields on the brief they already write.</strong>
+        <p>What decision this study feeds, who makes it, and when that decision gets made. We already track a delivery deadline &mdash; that is how we know we hit it 71% of the time &mdash; but nothing tells us whether the deadline itself was already after the client decided.</p>
+        <p>No decision date, no product.</p>
+      </div>
+      <div class="block">
+        <i>What we watch</i>
+        <strong>Whether the answer has settled.</strong>
+        <p>Only on studies where the client is choosing between options and one has to win. At kickoff the researcher tells us which number decides it &mdash; we do not pick that.</p>
+        <p>Then, as responses come in, we watch one thing: is the same option still ahead, and is the gap big enough that the sample still to come could not close it?</p>
+      </div>
+      <div class="block">
+        <i>What we send</i>
+        <strong>An early read a researcher has signed.</strong>
+        <p>If the leader has held: the winner, the margin, two themes, the main risk, every number cited. Locked, versioned and marked directional, so the final report supersedes it.</p>
+        <p>If it is still moving, the answer is <em>too early</em>. Not a softer paragraph.</p>
+      </div>
+    </div>
+    <div class="proof-strip">
+      <i>Where the work actually is</i>
+      <p>The three fields are a day of work. <b>The gate is the build:</b> a rule for when a lead is safe to call, backtested against last quarter's ~240 studies before a client sees anything, and nothing sends without a researcher accepting it. Small on purpose: 5&ndash;10 pilot studies to test a thesis, then it takes the substantial slot next quarter or it dies.</p>
+    </div>
+    <details class="aside">
+      <summary>The other candidate for this slot: MCP</summary>
+      <div class="pane">
+        <div class="blocks">
+          <div class="block soft"><i>What it is</i><p>One read-only MCP server for one design partner. Stakeholders ask questions of their own study data from Claude, Slack or their internal LLM, instead of emailing Ruth's team. Approved, cited cuts only, scoped per account.</p></div>
+          <div class="block soft"><i>Why it is tempting</i><p>It answers the access demand without a dashboard war, gives sales something genuinely new to demo, and is the first thing we would ship that reaches brand managers in the tools they already use.</p></div>
+          <div class="block soft"><i>Why not both</i><p>The early read tests the timing thesis; MCP tests the access thesis. Capacity says pick one. I would decide after week-one discovery: if the ad-hoc volume traces back to the high payers, MCP takes this slot.</p></div>
+        </div>
+      </div>
+    </details>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="risk" aria-label="Risk">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">7 &middot; Risk</p>
+    <h2 class="p-head">What could go wrong, and what stops it.</h2>
+    <p class="sub">Neither risk is "the model is inaccurate." Both are a client acting on something we got wrong.</p>
+    <div class="risks">
+      <div class="riskcard">
+        <b>1. We tell a client two waves are comparable when they are not.</b>
+        <dl>
+          <dt>What it costs</dt>
+          <dd>They show a CMO a trend line that is not real. We lose the account, and the reason they pay us: a person stood behind the number.</dd>
+          <dt>What stops it</dt>
+          <dd class="stops">A researcher approves every match. Anything the model is unsure about is marked not comparable and falls back to the manual rebuild.</dd>
+          <dt>Proof before launch</dt>
+          <dd>Replay last quarter's hand-rebuilt decks. Count the times we would have said "comparable" where the researcher said no. We ship at zero.</dd>
+        </dl>
+      </div>
+      <div class="riskcard">
+        <b>2. We send an early read that the finished study reverses.</b>
+        <dl>
+          <dt>What it costs</dt>
+          <dd>The client already acted on our number. A CMO stops trusting it &mdash; worse than being slow, which is the problem we set out to fix.</dd>
+          <dt>What stops it</dt>
+          <dd class="stops">We only send once the leader has stopped moving, a researcher signs every release, and the final report supersedes it.</dd>
+          <dt>Proof before launch</dt>
+          <dd>Test the rule against last quarter's ~240 studies: at every point we would have sent early, did it agree with the final one?</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="guard">
+      <b>Either one, once, stops the rollout</b>
+      <span>We go back to the manual path that week while we work out why.</span>
+    </div>
+    <details class="aside">
+      <summary>When we would know we were wrong</summary>
+      <div class="pane">
+    <div class="when">
+      <div class="when-step">
+        <b>Week one</b>
+        <p>Do two researchers agree on the same mapping for ten historically broken comparisons?</p>
+        <em>If they cannot agree, there is no ground truth to build against. Narrow to the easy cases, or stop.</em>
+      </div>
+      <div class="when-step">
+        <b>Pilot &middot; 5&ndash;10 studies</b>
+        <p>Zero unsafe matches, hours per wave falling, and early reads reaching the owner before the date.</p>
+        <em>Short of it, scope narrows. It does not get one more sprint.</em>
+      </div>
+      <div class="when-step">
+        <b>The quarter</b>
+        <p>Extra waves and cuts bought by tracker accounts, against a matched baseline of accounts without the tool.</p>
+        <em>Not NRR. Nothing here moves 102 to 115 in 90 days and I would rather say so now.</em>
+      </div>
+    </div>
+        <div class="blocks" style="margin-top:16px">
+          <div class="block soft"><i>And the third risk, the quiet one</i><p>Everyone likes the output and nobody buys more of it. That is why the quarter's test is extra waves and cuts from tracker accounts against a matched baseline, not a satisfaction score. Design partners who like it but show no expansion intent is a stop, not a nudge.</p></div>
+        </div>
+      </div>
+    </details>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="push" aria-label="Pushback">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">8 &middot; Where to push me</p>
+    <h2 class="p-head">The pushback I expect.</h2>
+    <div class="voices">
+      <details class="voice-row">
+        <summary>Nora is losing four deals a quarter. Why kill dashboards?</summary>
+        <div class="a"><p>The lost deals are real, but the loudest demand comes from the 15%-of-revenue, 2&times;-churn slice, and Glimmer is 35% cheaper on exactly that surface &mdash; while its larger accounts come back to full service. The access need is real; the answer is querying, not a worse Tableau. That routes to MCP.</p></div>
+      </details>
+      <details class="voice-row">
+        <summary>Decision timing is the better story. Why only the small bet?</summary>
+        <div class="a"><p>Demand is not the problem: second only to dashboards across 410 logged requests, and slow turnaround is 30% of churn exits (n=17). The gap is ours. We hit the client-stated deadline 71% of the time, but the packet says plainly that we have no read on whether that deadline was already late against the real decision. So: are decision dates knowable at scoping, and can we call a winner early and be right? The pilot buys both.</p></div>
+      </details>
+      <details class="voice-row">
+        <summary>Anya: 2.8 revision rounds is our margin walking out the door. Why is that only a diagnosis?</summary>
+        <div class="a"><p>Because we do not know the cause. It is real money, but nothing tells us whether it is ambiguous briefs, missing cuts, or stakeholders who never saw the plan. Cause-code revisions for a quarter &mdash; an analyst afternoon a week, not a build. If one cause dominates, it tops next quarter's list with evidence.</p></div>
+      </details>
+      <details class="voice-row">
+        <summary>Marcus: my two at-risk renewals are not feature problems. Nothing here saves them.</summary>
+        <div class="a"><p>Agreed. A departed champion and a price consolidation do not get fixed by a roadmap. That is why the target is expansion inside accounts that already pay &mdash; GRR at 89% is a different problem with a different owner. What continuity does do is make us harder to consolidate away from.</p></div>
+      </details>
+      <details class="voice-row">
+        <summary>The CEO: is this a defensible answer to "what is Northwind other than an agency with good taste"?</summary>
+        <div class="a"><p>Anyone can produce an answer now &mdash; ChatGPT does the open-ends, Glimmer the dashboards. What is scarce is an answer someone has checked and will stand behind. "We deliver research faster" does not survive a follow-up. <b>"Every number we give you has a name on it, and that person will defend it in front of your CMO"</b> does, and the map keeps that judgement wave after wave.</p></div>
+      </details>
+    <div class="backat">
+      <b>And what I would push back on</b>
+      <div class="asks">
+        <div><i>Omar &mdash;</i> the migration is 40% of Q3. What does it actually buy us, and could any of it slide?</div>
+        <div><i>Nora &mdash;</i> Glimmer's larger accounts came back to full service. Which ones? Can we get in front of them?</div>
+        <div><i>Lena &mdash;</i> two deals lost with our buyer not in the room. Did our champion get moved out, or replaced?</div>
+        <div><i>Anya &mdash;</i> what actually gets revised? If it is the same thing every time, that is fixable without dev.</div>
+      </div>
+    </div>
+    </div>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="questions" aria-label="Questions">
+    <div class="card">
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">9 &middot; My questions</p>
+    <h2 class="p-head">What I would ask in week one.</h2>
+    <p class="sub">The read threw up 23 questions I could not answer from the packet. These four would change the plan.</p>
+    <div class="tiles">
+      <div class="tile"><i>The bet</i><b>Trackers?</b><span>In an AI world, does the format survive? Put it to the three biggest tracker accounts before we write code.</span></div>
+      <div class="tile"><i>The data</i><b>Who is 10%?</b><span>10% of accounts drive 75% of ad-hoc volume. If they are the high payers, MCP moves up the list.</span></div>
+      <div class="tile"><i>The buyer</i><b>Never met</b><span>Eight brand-manager interviews. Half the roadmap assumes a persona nobody here has spoken to.</span></div>
+      <div class="tile"><i>Capacity</i><b>40% of Q3</b><span>What does the fielding migration buy us, and could any of it slide?</span></div>
+    </div>
+    <details class="aside">
+      <summary>The rest of the list</summary>
+      <div class="pane">
+        <div class="blocks two">
+          <div class="block soft"><i>On the data</i><p>Can we split retention by segment &mdash; did any big enterprise accounts actually churn? What gets revised, and is it the same thing every time? Would buyers pay more for continuity, or just expect it inside the fee?</p></div>
+          <div class="block soft"><i>On the bet and the ops</i><p>Nobody competes on tracker continuity &mdash; gap or graveyard? What non-dev fixes have we tried on revisions? And Ruth's CFO question: what number can we honestly give her? Ship the written decision record, then report coverage, not invented ROI.</p></div>
+        </div>
+      </div>
+    </details>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+  <article class="slide" id="ai" aria-label="How I built it">
+    <div class="card aiused">
+      <div class="fibre-wrap"><svg class="fibre" viewBox="0 0 830 800" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M60 790 C 190 700, 250 560, 320 430 C 410 260, 640 190, 660 330 C 680 470, 440 530, 420 380 C 400 230, 630 120, 800 50" stroke="url(#fib_b)" stroke-width="25" stroke-miterlimit="10" stroke-linecap="round"/>
+<defs>
+<linearGradient id="fib_b" x1="158.919" y1="756.621" x2="548.271" y2="-60.5529" gradientUnits="userSpaceOnUse">
+<stop offset="0.2" stop-color="#4F82B8"/>
+<stop offset="0.35" stop-color="#ECF0F6"/>
+<stop offset="0.65" stop-color="#FADCCD"/>
+<stop offset="1" stop-color="#F4A582"/>
+</linearGradient>
+</defs>
+</svg></div>
+      <div class="wrap"><div class="sheet">
+    <p class="eyebrow">10 &middot; How I built this</p>
+    <h2 class="p-head">Three models, one argument, and a walk around the block.</h2>
+    <div class="made">
+      <div><i>01 &middot; Interviews</i><b>&ldquo;You&rdquo; interviewed me before you interviewed me.</b><span>Claude researched the questions each interviewer would be likely to ask, and turned them into an interview prompt for ChatGPT voice. Then I talked to them on my evening walk around the block.</span></div>
+      <div><i>02 &middot; Read first</i><b>Every input, by hand, problems only.</b><span>One Google Doc of everything that looked wrong in the data. No solutions allowed until the list was finished.</span></div>
+      <div><i>03 &middot; The model</i><b>Ran it through my thoughtful-execution model.</b><span>A decision tree, not a wish list: evidence &rarr; problem area &rarr; opportunity &rarr; hypothesis &rarr; solution. Nothing reaches the roadmap without evidence behind it, and the options I killed stay on the map.</span></div>
+      <div><i>04 &middot; Same brief, three ways</i><b>Claude, Codex and Grok each wrote the memo.</b><span>Independently, from the same packet. Predictably, they did not agree on what to build.</span></div>
+      <div class="punch"><i>05 &middot; The fight</i><b>Then I made them argue about it.</b><span>Put the three memos in front of each other in Grok and had them defend their picks &mdash; specifically on which option actually moves NRR. The disagreement was the useful part.</span></div>
+      <div><i>06 &middot; This deck</i><b>Designed and branded by AI, from your own site.</b><span>Colours, type and the brand motif pulled from the company&rsquo;s own site. The judgement calls in it are mine.</span></div>
+    </div>
+      </div></div>
+    </div>
+    <span class="more">Scroll &#9660;</span>
+  </article>
+</main>
+
+<div class="hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or the top nav to move</div>
+
+<button class="arrow prev" id="prev" aria-label="Previous section">&larr;</button>
+<button class="arrow next" id="next" aria-label="Next section">&rarr;</button>
+
+<script>
+
+
+  (function pinToVisible(){
+    const body = document.body;
+    const apply = () => {
+      const vv = window.visualViewport;
+      if (vv) {
+        body.style.position = 'fixed';
+        body.style.top = vv.offsetTop + 'px';
+        body.style.left = vv.offsetLeft + 'px';
+        body.style.width = vv.width + 'px';
+        body.style.height = vv.height + 'px';
+        body.style.right = 'auto';
+        body.style.bottom = 'auto';
+      }
+      window.scrollTo(0, 0);
+    };
+    apply();
+    addEventListener('load', apply);
+    addEventListener('resize', apply);
+    if (window.visualViewport) {
+      visualViewport.addEventListener('resize', apply);
+      visualViewport.addEventListener('scroll', apply);
+    }
+  })();
+
+  const deck  = document.getElementById('deck');
+  const nav   = document.getElementById('nav');
+  const links = [...nav.querySelectorAll('a')];
+  const slides= [...deck.querySelectorAll('.slide')];
+  const prev  = document.getElementById('prev');
+  const next  = document.getElementById('next');
+  const bar   = document.getElementById('bar');
+  const count = document.getElementById('count');
+  const pad   = n => String(n).padStart(2,'0');
+  let index = 0;      // what is on screen
+  let wanted = 0;     // the slide we mean to be on (survives reflow)
+  let suppress = false;
+  let booted = false; // true once the opening slide has stopped being re-asserted
+
+  const targetLeft = i => {
+    const s = slides[i];
+    return s.offsetLeft - (deck.clientWidth - s.offsetWidth) / 2;
+  };
+  // Mandatory snap can abort a long smooth scroll, so snapping is switched off for the trip and
+  // a watchdog lands the deck exactly on the slide even if the animation never runs (throttled tab).
+  const slow = matchMedia('(prefers-reduced-motion: reduce)');
+  let trip = null;
+
+  const land = to => {
+    clearTimeout(trip); trip = null;
+    deck.scrollTo({left: to, behavior: 'auto'});   // cancels any smooth scroll still in flight
+    deck.classList.remove('nosnap');
+    paint(); measure();
+    setTimeout(() => {                             // and catch a straggler frame
+      if (Math.abs(deck.scrollLeft - to) > 1) { deck.scrollLeft = to; paint(); }
+    }, 90);
+  };
+
+  const go = (i, instant) => {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    wanted = i;
+    const to = targetLeft(i);
+    clearTimeout(trip); trip = null;
+    if (instant || slow.matches || Math.abs(to - deck.scrollLeft) < 2) { land(to); return; }
+    deck.classList.add('nosnap');
+    deck.scrollTo({left: to, behavior: 'smooth'});
+    trip = setTimeout(() => land(to), 900);
+  };
+
+  // a real swipe or wheel always wins over an in-flight move
+  ['pointerdown','touchstart','wheel'].forEach(ev => deck.addEventListener(ev, () => {
+    if (trip) { clearTimeout(trip); trip = null; deck.classList.remove('nosnap'); }
+  }, {passive:true}));
+
+  const nearest = () => {
+    const mid = deck.scrollLeft + deck.clientWidth / 2;
+    let best = 0, dist = Infinity;
+    slides.forEach((s, i) => {
+      const d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
+      if (d < dist) { dist = d; best = i; }
+    });
+    return best;
+  };
+
+  const drawBar = () => {
+    const span = deck.scrollWidth - deck.clientWidth;
+    bar.style.width = (span > 0 ? (deck.scrollLeft / span) * 100 : 0) + '%';
+  };
+
+  const paint = () => {
+    const i = nearest();
+    drawBar();
+    if (suppress || i === index) return;
+    index = i;
+    slides.forEach((s, n) => s.classList.toggle('current', n === i));
+    links.forEach((a, n) => a.classList.toggle('on', n === i));
+    count.textContent = pad(i + 1) + ' / ' + pad(slides.length);
+    prev.disabled = i === 0;
+    next.disabled = i === slides.length - 1;
+    history.replaceState(null, '', '#' + slides[i].id);
+    if (nav.scrollWidth > nav.clientWidth) {
+      const a = links[i];
+      nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
+    }
+    measure();
+  };
+
+  // does this card overflow vertically, and is it scrolled to the bottom?
+  function measure(){
+    slides.forEach(s => {
+      const c = s.querySelector('.card');
+      const over = c.scrollHeight - c.clientHeight > 18;   // ignore sub-pixel overflow
+      c.classList.toggle('fit', !over);
+      s.classList.toggle('overflowing', over);
+      s.classList.toggle('atend', over && c.scrollTop + c.clientHeight >= c.scrollHeight - 12);
+    });
+  }
+
+  let tick = false, rest;
+  deck.addEventListener('scroll', () => {
+    drawBar();
+    clearTimeout(rest);
+    rest = setTimeout(() => { if (!suppress && booted) wanted = index; }, 160);
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(() => { tick = false; paint(); });
+  }, {passive:true});
+
+  addEventListener('toggle', measure, true);   // <details> toggles do not bubble
+
+  slides.forEach(s => s.querySelector('.card').addEventListener('scroll', () => {
+    dropHint();
+    const c = s.querySelector('.card');
+    s.classList.toggle('atend', c.scrollTop + c.clientHeight >= c.scrollHeight - 12);
+  }, {passive:true}));
+
+  links.forEach((a, i) => a.addEventListener('click', e => { e.preventDefault(); go(i); }));
+  prev.addEventListener('click', () => go(index - 1));
+  next.addEventListener('click', () => go(index + 1));
+
+  addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(index + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(index - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End')  { e.preventDefault(); go(slides.length - 1); }
+  });
+
+  // a resize re-lays the track out and can drop the scroll position: re-assert the slide we want
+  let rt;
+  addEventListener('resize', () => {
+    suppress = true;
+    clearTimeout(rt);
+    rt = setTimeout(() => { go(wanted, true); suppress = false; measure(); }, 150);
+  });
+
+  addEventListener('hashchange', () => {
+    const i = slides.findIndex(s => '#' + s.id === location.hash);
+    if (i >= 0 && i !== index) go(i);
+  });
+
+  // deep link: /#build opens on that slide
+  const start = Math.max(0, slides.findIndex(s => '#' + s.id === location.hash));
+  slides[start].classList.add('current');
+  links[start].classList.add('on');
+  index = start;
+  wanted = start;
+  count.textContent = pad(start + 1) + ' / ' + pad(slides.length);
+  prev.disabled = start === 0;
+  next.disabled = start === slides.length - 1;
+
+  // hold the deep-linked slide through late reflow (fonts, images, snap re-resolution),
+  // and stop the moment the reader takes over
+  let touched = false, frames = 0;
+  ['pointerdown','touchstart','keydown','wheel'].forEach(ev =>
+    addEventListener(ev, () => { touched = true; }, {passive:true, once:true}));
+  const hint = document.querySelector('.hint');
+  const dropHint = () => hint && hint.classList.add('gone');
+  setTimeout(dropHint, 7000);
+  ['pointerdown','touchstart','keydown','wheel'].forEach(ev =>
+    addEventListener(ev, dropHint, {passive:true, once:true}));
+
+  links.forEach(a => a.addEventListener('click', () => { touched = true; dropHint(); }));
+  [prev, next].forEach(b => b.addEventListener('click', () => { touched = true; dropHint(); }));
+
+  const settle = () => {
+    if (touched || frames++ > 45) { booted = true; measure(); return; }
+    const t = targetLeft(start);
+    if (Math.abs(deck.scrollLeft - t) > 2) { deck.scrollLeft = t; wanted = start; }
+    paint(); measure();
+    requestAnimationFrame(settle);
+  };
+  requestAnimationFrame(settle);
+
+</script>
+</body>
+</html>
